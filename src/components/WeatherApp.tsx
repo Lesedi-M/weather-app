@@ -15,6 +15,7 @@ import {
   Loader2,
   Clock,
   Thermometer,
+  Info,
 } from "lucide-react";
 
 // Types
@@ -94,9 +95,7 @@ const WeatherApp: React.FC = () => {
     ],
   });
 
-  const API_KEY =
-    process.env.NEXT_PUBLIC_WEATHER_API_KEY ||
-    "167357813eeef0ae3bfc78f4d3fefe28";
+  const API_KEY = process.env.NEXT_PUBLIC_WEATHER_API_KEY;
 
   // Real API integration
   const fetchWeatherData = async (city: string) => {
@@ -263,78 +262,30 @@ const WeatherApp: React.FC = () => {
     condition: string,
     size: "small" | "medium" | "large" = "medium"
   ) => {
-    const iconSize = size === "small" ? 32 : size === "medium" ? 40 : 64;
+    const iconSize = size === "small" ? 40 : size === "medium" ? 40 : 64;
+    const iconMap: { [key: string]: string } = {
+      sunny: "/icons/clear.png",
+      clear: "/icons/clear.png",
+      "partly-cloudy": "/icons/clouds.png",
+      "partly-sunny": "/icons/clouds.png",
+      cloudy: "/icons/mist.png",
+      rainy: "/icons/rain.png",
+      snowy: "/icons/drizzle.png",
+    };
 
-    switch (condition.toLowerCase()) {
-      case "sunny":
-      case "clear":
-        return (
-          <div className="relative">
-            <div className="absolute inset-0 bg-yellow-400/30 rounded-full blur-lg"></div>
-            <Sun
-              className="relative text-yellow-400"
-              size={iconSize}
-              strokeWidth={2.5}
-            />
-          </div>
-        );
-      case "partly-cloudy":
-      case "partly-sunny":
-        return (
-          <div className="relative">
-            <Sun
-              className="text-yellow-400"
-              size={iconSize}
-              strokeWidth={2.5}
-            />
-            <Cloud
-              className="absolute top-2 left-2 text-gray-300"
-              size={iconSize * 0.6}
-              strokeWidth={2.5}
-            />
-          </div>
-        );
-      case "cloudy":
-        return (
-          <Cloud className="text-gray-400" size={iconSize} strokeWidth={2.5} />
-        );
-      case "rainy":
-        return (
-          <div className="relative">
-            <Cloud
-              className="text-gray-400"
-              size={iconSize}
-              strokeWidth={2.5}
-            />
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1">
-              <div className="flex gap-0.5">
-                <div className="w-0.5 h-2 bg-blue-400 rounded-full"></div>
-                <div className="w-0.5 h-2 bg-blue-400 rounded-full"></div>
-                <div className="w-0.5 h-2 bg-blue-400 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        );
-      case "snowy":
-        return (
-          <CloudSnow
-            className="text-blue-200"
-            size={iconSize}
-            strokeWidth={2.5}
-          />
-        );
-      default:
-        return (
-          <div className="relative">
-            <div className="absolute inset-0 bg-yellow-400/30 rounded-full blur-lg"></div>
-            <Sun
-              className="relative text-yellow-400"
-              size={iconSize}
-              strokeWidth={2.5}
-            />
-          </div>
-        );
-    }
+    const iconSrc = iconMap[condition.toLowerCase()] || "/icons/clear.png";
+
+    return (
+      <div className="relative">
+        <img
+          src={iconSrc}
+          alt={condition}
+          width={iconSize}
+          height={iconSize}
+          className="object-contain"
+        />
+      </div>
+    );
   };
 
   const getCurrentTime = () => {
@@ -381,9 +332,14 @@ const WeatherApp: React.FC = () => {
     <div
       className={`min-h-screen p-6 transition-all duration-300 font-['Poppins'] ${
         isDarkMode
-          ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white"
+          ? "dark text-white"
           : "bg-gradient-to-br from-gray-100 via-white to-gray-100 text-gray-900"
       }`}
+      style={{
+        background: isDarkMode
+          ? "linear-gradient(110.05deg, #383838 0%, rgba(158, 158, 158, 0) 71.82%)"
+          : undefined,
+      }}
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -420,7 +376,7 @@ const WeatherApp: React.FC = () => {
           <div className="flex-1 max-w-lg mx-6">
             <div className="relative">
               <Search
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 z-[999]"
                 size={20}
               />
               <input
@@ -430,11 +386,18 @@ const WeatherApp: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
                 disabled={isLoading}
-                className={`w-full pl-12 pr-6 py-3 rounded-full border-2 transition-all duration-300 ${
+                className={`w-full pl-12 pr-12 py-3 rounded-full border-2 transition-all duration-300 ${
                   isDarkMode
                     ? "bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:bg-gray-800"
                     : "bg-white/70 border-gray-200 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:bg-white"
                 } disabled:opacity-50 backdrop-blur-sm`}
+              />
+              <Info
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 cursor-pointer"
+                size={20}
+                onClick={() =>
+                  alert("Enter a city name to search for weather information.")
+                }
               />
             </div>
           </div>
@@ -492,6 +455,7 @@ const WeatherApp: React.FC = () => {
                   fontSize: "36px",
                   lineHeight: "100%",
                   letterSpacing: "0%",
+                  color: isDarkMode ? "#FFFFFF" : "#333333",
                 }}
               >
                 {weatherData.current.location}
@@ -509,6 +473,7 @@ const WeatherApp: React.FC = () => {
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
+                  color: isDarkMode ? "#FFFFFF" : "#333333",
                 }}
               >
                 {weatherData.current.time}
@@ -602,9 +567,14 @@ const WeatherApp: React.FC = () => {
                     style={{
                       fontFamily: "Poppins, sans-serif",
                       fontWeight: 700,
-                      fontSize: "64px",
+                      fontSize: "80px",
                       lineHeight: "100%",
                       letterSpacing: "0%",
+                      background:
+                        "linear-gradient(84.4deg, #FFFFFF -16.56%, rgba(255, 255, 255, 0) 118.43%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
                     }}
                   >
                     {weatherData.current.temp}°C
@@ -613,17 +583,95 @@ const WeatherApp: React.FC = () => {
                     className="text-gray-400 text-lg"
                     style={{ fontFamily: "Poppins, sans-serif" }}
                   >
-                    Feels like: {weatherData.current.feelsLike}°C
+                    Feels like: <span style={{fontFamily: "Poppins, sans-serif",
+                  fontWeight: 700,
+                  fontSize: "20px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  background:
+                    "linear-gradient(84.4deg, #FFFFFF -16.56%, rgba(255, 255, 255, 0) 118.43%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  color: isDarkMode ? "#FFFFFF" : "#333333",}}>{weatherData.current.feelsLike}°C</span> 
+                  </div>
+                  {/* Bottom Section: Sunrise and Sunset */}
+                  <div className="grid grid-cols-1  gap-6 pt-6 border-t border-gray-600/20">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <div className="text-gray-400">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M12 3V5M12 19V21M5.636 5.636L7.05 7.05M16.95 16.95L18.364 18.364M3 12H5M19 12H21"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="M8 12C8 14.21 9.79 16 12 16C14.21 16 16 14.21 16 12"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-[20px] ">
+                            Sunrise
+                          </div>
+                          <div className=" text-lg text-gray-400">
+                            {weatherData.current.sunrise}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-2">
+                        <div className="text-gray-400">
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M12 3V5M12 19V21M5.636 5.636L7.05 7.05M16.95 16.95L18.364 18.364M3 12H5M19 12H21"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                            <path
+                              d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-lg">Sunset</div>
+                          <div className="text-lg text-gray-400">
+                            {weatherData.current.sunset}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Center: Weather Icon and Condition */}
                 <div className="text-center">
-                  <div className="mb-4 flex items-center justify-center w-20 h-20 mx-auto">
+                  <div className="mb-4 flex items-center justify-center w-40 h-40 mx-auto">
                     {getWeatherIcon(weatherData.current.condition, "large")}
                   </div>
                   <div
-                    className="text-2xl font-bold"
+                    className="text-[32px] font-bold"
                     style={{ fontFamily: "Poppins, sans-serif" }}
                   >
                     {weatherData.current.condition}
@@ -686,73 +734,6 @@ const WeatherApp: React.FC = () => {
                       {weatherData.current.uv}
                     </div>
                     <div className="text-sm text-gray-400">UV</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Bottom Section: Sunrise and Sunset */}
-              <div className="grid grid-cols-2 gap-6 pt-6 border-t border-gray-600/20">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="text-gray-400">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <path
-                          d="M12 3V5M12 19V21M5.636 5.636L7.05 7.05M16.95 16.95L18.364 18.364M3 12H5M19 12H21"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M8 12C8 14.21 9.79 16 12 16C14.21 16 16 14.21 16 12"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-lg">Sunrise</div>
-                      <div className="font-bold text-lg">
-                        {weatherData.current.sunrise}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="text-gray-400">
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <path
-                          d="M12 3V5M12 19V21M5.636 5.636L7.05 7.05M16.95 16.95L18.364 18.364M3 12H5M19 12H21"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                        <path
-                          d="M8 12C8 9.79 9.79 8 12 8C14.21 8 16 9.79 16 12"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-lg">Sunset</div>
-                      <div className="font-bold text-lg">
-                        {weatherData.current.sunset}
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
