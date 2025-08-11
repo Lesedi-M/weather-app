@@ -2,6 +2,11 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+**Clone the repository**
+```bash
+git clone https://github.com/Lesedi-M/weather-app.git
+cd bitcube
+
 First, run the development server:
 
 ```bash
@@ -15,6 +20,20 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+
+# Copy environment template
+cp .env.local.example .env.local
+
+**Get OpenWeatherMap API Key**
+   - Visit [OpenWeatherMap](https://openweathermap.org/api)
+   - Create a free account
+   - Generate an API key
+   - Add it to your `.env.local` file
+
+# Edit .env.local with your API key
+OPENWEATHER_API_KEY=your_api_key_here
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Search,
-  MapPin,
   Sun,
   Cloud,
   CloudRain,
@@ -262,7 +261,7 @@ const WeatherApp: React.FC = () => {
     condition: string,
     size: "small" | "medium" | "large" = "medium"
   ) => {
-    const iconSize = size === "small" ? 40 : size === "medium" ? 40 : 64;
+    const iconSize = size === "small" ? 40 : size === "medium" ? 150 : 150;
     const iconMap: { [key: string]: string } = {
       sunny: "/icons/clear.png",
       clear: "/icons/clear.png",
@@ -347,18 +346,19 @@ const WeatherApp: React.FC = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`relative w-16 h-8 rounded-full transition-all duration-300 ${
-                isDarkMode ? "bg-gray-700" : "bg-gray-300"
-              }`}
+              className="relative w-16 h-8 rounded-full transition-all duration-300 backdrop-blur-sm"
+              style={{
+                background: "rgba(217, 217, 217, 1)",
+              }}
               aria-label="Toggle dark mode"
             >
               <div
-                className={`absolute w-6 h-6 bg-white rounded-full top-1 transition-transform duration-300 shadow-lg ${
-                  isDarkMode ? "translate-x-8" : "translate-x-1"
+                className={`absolute w-6 h-6 rounded-full top-1 transition-transform duration-300 shadow-lg ${
+                  isDarkMode ? "translate-x-8 bg-gray-900" : "translate-x-1 bg-gray-800"
                 }`}
               >
                 {isDarkMode ? (
-                  <div className="w-full h-full rounded-full bg-gray-800 flex items-center justify-center text-xs">
+                  <div className="w-full h-full rounded-full flex items-center justify-center text-xs text-white">
                     🌙
                   </div>
                 ) : (
@@ -386,11 +386,16 @@ const WeatherApp: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearch}
                 disabled={isLoading}
-                className={`w-full pl-12 pr-12 py-3 rounded-full border-2 transition-all duration-300 ${
+                className={`w-full pl-12 pr-12 py-3 rounded-full border-2 transition-all duration-300 backdrop-blur-sm ${
                   isDarkMode
-                    ? "bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:bg-gray-800"
-                    : "bg-white/70 border-gray-200 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:bg-white"
-                } disabled:opacity-50 backdrop-blur-sm`}
+                    ? "border-gray-600 text-white placeholder-gray-400 focus:border-blue-500"
+                    : "border-gray-200 text-gray-900 placeholder-gray-500 focus:border-blue-500"
+                } disabled:opacity-50`}
+                style={{
+                  background: isDarkMode
+                    ? "linear-gradient(110.05deg, #383838 0%, rgba(158, 158, 158, 0) 71.82%)"
+                    : "linear-gradient(110.05deg, #f0f0f0 0%, rgba(255, 255, 255, 0.8) 71.82%)",
+                }}
               />
               <Info
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 cursor-pointer"
@@ -410,7 +415,13 @@ const WeatherApp: React.FC = () => {
             {isLoading ? (
               <Loader2 className="animate-spin" size={20} />
             ) : (
-              <MapPin size={20} />
+              <img
+                src="/icons/location.png"
+                alt="Current Location"
+                width={20}
+                height={20}
+                className="object-contain"
+              />
             )}
             Current Location
           </button>
@@ -507,11 +518,11 @@ const WeatherApp: React.FC = () => {
               >
                 5 Days Forecast:
               </h3>
-              <div className=" flex flex-col gap-3">
+              <div className="flex flex-col gap-3">
                 {weatherData.daily.map((day, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between  p-4 rounded-2xl transition-all duration-200"
+                    className="flex items-center justify-between p-4 rounded-2xl transition-all duration-200"
                     style={{
                       background: isDarkMode
                         ? "rgba(255, 255, 255, 0.05)"
@@ -583,20 +594,22 @@ const WeatherApp: React.FC = () => {
                     className="text-gray-400 text-lg"
                     style={{ fontFamily: "Poppins, sans-serif" }}
                   >
-                    Feels like: <span style={{fontFamily: "Poppins, sans-serif",
-                  fontWeight: 700,
-                  fontSize: "20px",
-                  lineHeight: "100%",
-                  letterSpacing: "0%",
-                  background:
-                    "linear-gradient(84.4deg, #FFFFFF -16.56%, rgba(255, 255, 255, 0) 118.43%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  color: isDarkMode ? "#FFFFFF" : "#333333",}}>{weatherData.current.feelsLike}°C</span> 
+                    Feels like: <span style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 700,
+                      fontSize: "20px",
+                      lineHeight: "100%",
+                      letterSpacing: "0%",
+                      background:
+                        "linear-gradient(84.4deg, #FFFFFF -16.56%, rgba(255, 255, 255, 0) 118.43%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                      color: isDarkMode ? "#FFFFFF" : "#333333",
+                    }}>{weatherData.current.feelsLike}°C</span> 
                   </div>
                   {/* Bottom Section: Sunrise and Sunset */}
-                  <div className="grid grid-cols-1  gap-6 pt-6 border-t border-gray-600/20">
+                  <div className="grid grid-cols-1 gap-6 pt-6 border-t border-gray-600/20">
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         <div className="text-gray-400">
@@ -621,10 +634,10 @@ const WeatherApp: React.FC = () => {
                           </svg>
                         </div>
                         <div>
-                          <div className="font-semibold text-[20px] ">
+                          <div className="font-semibold text-[20px]">
                             Sunrise
                           </div>
-                          <div className=" text-lg text-gray-400">
+                          <div className="text-lg text-gray-400">
                             {weatherData.current.sunrise}
                           </div>
                         </div>
@@ -764,41 +777,54 @@ const WeatherApp: React.FC = () => {
                 Hourly Forecast:
               </h3>
               <div className="grid grid-cols-5 gap-3">
-                {weatherData.hourly.map((hour, index) => (
-                  <div
-                    key={index}
-                    className="text-center p-4 rounded-2xl transition-all duration-200 text-white relative overflow-hidden"
-                    style={{
-                      background: isDarkMode
-                        ? "linear-gradient(135deg, rgba(55, 55, 55, 0.8) 0%, rgba(25, 25, 25, 0.9) 100%)"
-                        : "linear-gradient(135deg, rgba(75, 75, 75, 0.8) 0%, rgba(45, 45, 45, 0.9) 100%)",
-                      backdropFilter: "blur(10px)",
-                      border: "1px solid rgba(255, 255, 255, 0.1)",
-                    }}
-                  >
-                    <div className="relative z-10">
-                      <div
-                        className="text-sm font-semibold mb-3"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
-                        {hour.time}
-                      </div>
-                      <div className="flex justify-center mb-3 w-8 h-8 mx-auto">
-                        {getWeatherIcon(hour.condition, "small")}
-                      </div>
-                      <div
-                        className="font-bold text-lg mb-2"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
-                        {hour.temp}°C
-                      </div>
-                      <div className="text-xs flex items-center justify-center gap-1">
-                        <div className="w-0 h-0 border-l-[3px] border-r-[3px] border-b-[6px] border-transparent border-b-cyan-400"></div>
-                        {hour.windSpeed}km/h
+                {weatherData.hourly.map((hour, index) => {
+                  // Create gradient colors from orange to blue based on index
+                  const gradientColors = [
+                    "linear-gradient(135deg, #FF8A65 0%, #FFB74D 100%)", // Orange
+                    "linear-gradient(135deg, #FFB74D 0%, #FFA726 100%)", // Light orange
+                    "linear-gradient(135deg, #81C784 0%, #66BB6A 100%)", // Green
+                    "linear-gradient(135deg, #64B5F6 0%, #5C6BC0 100%)", // Blue
+                    "linear-gradient(135deg, #5C6BC0 0%, #3F51B5 100%)", // Dark blue
+                  ];
+                  
+                  return (
+                    <div
+                      key={index}
+                      className="text-center p-4 rounded-2xl transition-all duration-200 relative overflow-hidden"
+                      style={{
+                        background: isDarkMode
+                          ? "linear-gradient(135deg, rgba(55, 55, 55, 0.8) 0%, rgba(25, 25, 25, 0.9) 100%)"
+                          : gradientColors[index % gradientColors.length],
+                        backdropFilter: "blur(10px)",
+                        border: isDarkMode ? "1px solid rgba(255, 255, 255, 0.1)" : "1px solid rgba(255, 255, 255, 0.3)",
+                        color: isDarkMode ? "white" : "white",
+                        textShadow: isDarkMode ? "none" : "0 1px 2px rgba(0, 0, 0, 0.3)",
+                      }}
+                    >
+                      <div className="relative z-10">
+                        <div
+                          className="text-sm font-semibold mb-3"
+                          style={{ fontFamily: "Poppins, sans-serif" }}
+                        >
+                          {hour.time}
+                        </div>
+                        <div className="flex justify-center mb-3 w-8 h-8 mx-auto">
+                          {getWeatherIcon(hour.condition, "small")}
+                        </div>
+                        <div
+                          className="font-bold text-lg mb-2"
+                          style={{ fontFamily: "Poppins, sans-serif" }}
+                        >
+                          {hour.temp}°C
+                        </div>
+                        <div className="text-xs flex items-center justify-center gap-1">
+                          <div className="w-0 h-0 border-l-[3px] border-r-[3px] border-b-[6px] border-transparent border-b-cyan-300"></div>
+                          {hour.windSpeed}km/h
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
